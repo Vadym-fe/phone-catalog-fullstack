@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Product } from '../types/Product';
+import { Product } from '../../shared/types/Product';
 import { CartItem } from '../types/CartItem';
 
 type ProductsContextType = {
@@ -13,6 +13,12 @@ type ProductsContextType = {
   products: Product[];
   isLoading: boolean;
   hasError: boolean;
+  addProduct: (newprod: Omit<Product, 'id'>) => Promise<Product>;
+  updateNewProduct: (
+    id: number,
+    updatedData: Partial<Omit<Product, 'id'>>,
+  ) => Promise<Product>;
+  deleteProductFromArray: (id: number) => Promise<void>;
 };
 
 export const ProductsContext = createContext<ProductsContextType | undefined>(

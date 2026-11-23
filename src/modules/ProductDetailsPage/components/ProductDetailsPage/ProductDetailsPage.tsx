@@ -8,7 +8,7 @@ import { getProductVariant } from '../../../../utils/details';
 import { useProductsContext } from '../../../../hook/useProductsContext';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { DetailsProduct } from '../../../../types/DetailsProduct';
-import { Product } from '../../../../types/Product';
+import { Product } from '../../../../../shared/types/Product';
 import { getSuggestedProducts } from '../../../../api/products';
 
 export const ProductDetailsPage = () => {

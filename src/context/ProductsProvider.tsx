@@ -1,9 +1,14 @@
 import React, { ReactNode, useState } from 'react';
-import { Product } from '../types/Product';
+import { Product } from '../../shared/types/Product';
 import { ProductsContext } from './ProductsContext';
 import { CartItem } from '../types/CartItem';
 import { useEffect } from 'react';
-import { getProducts } from '../api/products';
+import {
+  createProduct,
+  deleteProduct,
+  getProducts,
+  updateProduct,
+} from '../api/products';
 
 type ProductsProviderProps = {
   children: ReactNode;
@@ -35,6 +40,47 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
+
+  async function addProduct(newProduct: Omit<Product, 'id'>): Promise<Product> {
+    const createdProduct = await createProduct(newProduct);
+
+    setProducts(currentProducts => [...currentProducts, createdProduct]);
+
+    return createdProduct;
+  }
+
+  async function updateNewProduct(
+    id: number,
+    updatedData: Partial<Omit<Product, 'id'>>,
+  ): Promise<Product> {
+    const update = await updateProduct(id, updatedData);
+
+    setProducts(currentProducts => {
+      return currentProducts.map(currentProduct => {
+        if (currentProduct.id === id) {
+          return update;
+        }
+
+        return currentProduct;
+      });
+    });
+
+    return update;
+  }
+
+  async function deleteProductFromArray(id: number): Promise<void> {
+    await deleteProduct(id);
+
+    setProducts(currentProducts => {
+      return currentProducts.filter(currentProduct => {
+        if (currentProduct.id === id) {
+          return false;
+        }
+
+        return true;
+      });
+    });
+  }
 
   function addToCart(product: Product) {
     setCartProducts(currentProducts => {
@@ -135,6 +181,9 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({
         products,
         isLoading,
         hasError,
+        addProduct,
+        updateNewProduct,
+        deleteProductFromArray,
       }}
     >
       {children}

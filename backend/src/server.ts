@@ -1,6 +1,7 @@
-import express from "express";
+import express from 'express';
 import cors from "cors";
 import productsRouter from "./routes/products.routes";
+import { errorMiddleware } from "./middlewares/error.middleware";
 
 const app = express();
 const PORT = 4200;
@@ -14,6 +15,8 @@ app.get("/", (_req, res) => {
 });
 
 app.use('/api/products', productsRouter);
+
+app.use(errorMiddleware)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

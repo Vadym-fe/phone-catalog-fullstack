@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
-import { Product } from '../../../../types/Product';
+import { Product } from '../../../../../shared/types/Product';
 import { useProductsContext } from '../../../../hook/useProductsContext';
 
 type Props = {

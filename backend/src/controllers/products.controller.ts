@@ -1,71 +1,108 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { ProductsService } from '../services/products.service';
-import { Product } from '../../../shared/types/Product';
+import { limitSchema, pageSchema, productIdSchema, productSchema, sortSchema, updateProductSchema } from '../validation/product.schema';
+import { AppError } from '../middlewares/app-error';
 
 const service = new ProductsService();
 
-export async function getProducts(_req: Request, res: Response) {
+export async function getProducts(req: Request, res: Response, next: NextFunction) {
   try {
-    const products = await service.getAll();
+    const limit = limitSchema.safeParse(req.query.limit);
+    const sort = sortSchema.safeParse(req.query.sort);
+    const page = pageSchema.safeParse(req.query.page);
+
+    if (!limit.success || !sort.success || !page.success) {
+      throw new AppError('Invalid pagination or sorting parameters', 400);
+    }
+
+    const products = await service.getAll(limit.data, sort.data, page.data);
+
     res.json(products);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to read products data' });
+    next(error);
   }
 }
 
-export async function createProduct(req: Request, res: Response) {
+export async function createProduct(req: Request, res: Response, next: NextFunction) {
   try {
-    const newProduct = req.body;
-    const newProductWithId = await service.create(newProduct);
+    const result = productSchema.safeParse(req.body);
+
+    if (!result.success) {
+      throw new AppError(result.error.message, 400);
+    }
+
+    const newProductWithId = await service.create(result.data);
 
     res.status(201).json(newProductWithId)
   } catch (error) {
-    res.status(500).json({ message: 'Failed to create product.' });
+    next(error);
   };
 }
 
-export async function updatedProduct(req: Request, res: Response) {
+export async function updatedProduct(req: Request, res: Response, next: NextFunction) {
   try {
-    const productForUpdate: Partial<Omit<Product, 'id'>> = req.body;
-    const getParamId = Number(req.params.id);
-    const newUpdatedProduct = await service.update(getParamId, productForUpdate);
+    const resultProduct = updateProductSchema.safeParse(req.body);
 
-    if (!newUpdatedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
+    if (!resultProduct.success) {
+      throw new AppError(resultProduct.error.message, 400);
+    } else if (Object.keys(req.body).length === 0) {
+      throw new AppError('No fields to update', 400);
+    }
+
+    const resultParamId = productIdSchema.safeParse(req.params.id);
+
+    if (!resultParamId.success) {
+      throw new AppError(resultParamId.error.message, 400);
+    }
+
+    const newUpdatedProduct = await service.update(resultParamId.data, resultProduct.data);
+
+    if (newUpdatedProduct === undefined) {
+      throw new AppError('Product not found', 404);
     }
 
     res.status(200).json(newUpdatedProduct);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update product.' });
+    next(error);
   }
 }
 
-export async function deleteProduct(req: Request, res: Response) {
+export async function deleteProduct(req: Request, res: Response, next: NextFunction) {
   try {
-    const getParamId = Number(req.params.id);
-    const newProducts = await service.delete(getParamId);
+    const result = productIdSchema.safeParse(req.params.id);
 
-    if (!newProducts) {
-      return res.status(404).json({ message: 'Product not found' });
+    if (!result.success) {
+      throw new AppError(result.error.message, 400)
     }
 
-    res.status(200).json(newProducts);
+    const newProducts = await service.delete(result.data);
+
+    if (newProducts === undefined) {
+      throw new AppError('Product not found', 404);
+    }
+
+    return res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: 'Failed to delete product' });
+    next(error);
   }
 }
 
-export async function getProductById(req: Request, res: Response) {
+export async function getProductById(req: Request, res: Response, next: NextFunction) {
   try {
-    const getParamId = Number(req.params.id);
-    const product = await service.getById(getParamId);
+    const result = productIdSchema.safeParse(req.params.id);
+
+    if (!result.success) {
+      throw new AppError(result.error.message, 400);
+    }
+
+    const product = await service.getById(result.data);
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      throw new AppError('Product not found', 404);
     }
 
     res.json(product)
   } catch (error) {
-    res.status(500).json({ message: 'Failed to get product' });
+    next(error);
   }
 }

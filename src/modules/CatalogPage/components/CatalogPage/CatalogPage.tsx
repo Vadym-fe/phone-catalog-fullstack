@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './CatalogPage.module.scss';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getNumbersLength } from '../../../../utils/product';
-import { Product } from '../../../../types/Product';
+import { Product } from '../../../../../shared/types/Product';
 import { useProductsContext } from '../../../../hook/useProductsContext';
 import { Loader } from '../../../shared/components/Loader/Loader';
 import { ProductsList } from '../../../shared/components/ProductsList';

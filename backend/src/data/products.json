@@ -2722,11 +2722,39 @@
     "name": "Apple iPad Mini (5th Gen) 256GB Gold",
     "capacity": "512GB",
     "fullPrice": 349,
-    "price": 199,
+    "price": 0,
     "color": "black",
     "image": "img/tablets/apple-ipad-mini-5th-gen/gold/00.webp",
     "screen": "7.9' Retina",
     "ram": "3GB",
     "year": 2019
+  },
+  {
+    "id": 201,
+    "category": "phones",
+    "itemId": "test-phone",
+    "name": "Test Phone",
+    "fullPrice": 1000,
+    "price": 10,
+    "screen": "6.1",
+    "capacity": "128GB",
+    "color": "black",
+    "ram": "8GB",
+    "year": 2026,
+    "image": "img/test-phone.jpg"
+  },
+  {
+    "id": 202,
+    "category": "phones",
+    "itemId": "test-phone",
+    "name": "Test Phone",
+    "fullPrice": 1000,
+    "price": 10,
+    "screen": "6.1",
+    "capacity": "128GB",
+    "color": "black",
+    "ram": "8GB",
+    "year": 2026,
+    "image": "img/test-phone.jpg"
   }
 ]

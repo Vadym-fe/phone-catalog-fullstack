@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Product } from '../../../../types/Product';
+import { Product } from '../../../../../shared/types/Product';
 import styles from './ProductsSlider.module.scss';
 import { ProductCard } from '../ProductCard/ProductCard';
 import { getProductIndex } from '../../../../utils/product';
